@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright (c) 2012, Tang Tiong Yew
 # All rights reserved.
@@ -28,7 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import rospy
-from visual import *
+from vpython import *
 import math
 import wx
 

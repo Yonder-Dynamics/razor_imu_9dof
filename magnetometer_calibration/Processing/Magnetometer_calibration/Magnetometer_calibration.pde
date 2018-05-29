@@ -91,7 +91,7 @@ void setup() {
   // Setup serial port I/O
   println("AVAILABLE SERIAL PORTS:");
   println(Serial.list());
-  String portName = Serial.list()[SERIAL_PORT_NUM];
+  String portName = "/dev/serial/by-id/usb-SparkFun_SFE_9DOF-D21-if00";
   println();
   println("HAVE A LOOK AT THE LIST ABOVE AND SET THE RIGHT SERIAL PORT NUMBER IN THE CODE!");
   println("  -> Using port " + SERIAL_PORT_NUM + ": " + portName);
@@ -266,7 +266,7 @@ void outputCalibration() {
   v = ( D' * D ) \ ( D' * ones( size( x, 1 ), 1 ) );
   */
   SimpleMatrix tempA = D.transpose().mult(D);
-  SimpleMatrix ones = x.copy(); ones.set(1);
+  SimpleMatrix ones = x.copy(); ones.fill(1);
   SimpleMatrix tempB = D.transpose().mult(ones);
   SimpleMatrix v = tempA.solve(tempB);
   
@@ -308,9 +308,9 @@ void outputCalibration() {
   SimpleEVD evd = R.extractMatrix(0, 3, 0, 3).divide(-R.get(3, 3)).eig();
 
   SimpleMatrix evecs = new SimpleMatrix(3, 3);
-  evecs.insertIntoThis(0, 0, evd.getEigenVector(0));
-  evecs.insertIntoThis(0, 1, evd.getEigenVector(1));
-  evecs.insertIntoThis(0, 2, evd.getEigenVector(2));
+  evecs.insertIntoThis(0, 0, (SimpleMatrix)evd.getEigenVector(0));
+  evecs.insertIntoThis(0, 1, (SimpleMatrix)evd.getEigenVector(1));
+  evecs.insertIntoThis(0, 2, (SimpleMatrix)evd.getEigenVector(2));
   
   SimpleMatrix radii = new SimpleMatrix(new double[][]
     {{Math.sqrt(1.0 / evd.getEigenvalue(0).getReal()),
@@ -338,7 +338,7 @@ void outputCalibration() {
   scale.set(0, 0, radii.get(0));
   scale.set(1, 1, radii.get(1));
   scale.set(2, 2, radii.get(2));
-  scale = scale.invert().scale(CommonOps.elementMin(radii.getMatrix()));
+  scale = scale.invert().scale(CommonOps_DDRM.elementMin((DMatrixD1)radii.getMatrix()));
   
   SimpleMatrix map = evecs.transpose();
   SimpleMatrix invmap = evecs;
