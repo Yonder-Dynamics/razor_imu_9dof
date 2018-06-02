@@ -32,6 +32,7 @@ import serial
 import string
 import math
 import sys
+from pyquaternion import Quaternion
 
 #from time import time
 from sensor_msgs.msg import Imu
@@ -249,11 +250,12 @@ while not rospy.is_shutdown():
         #in AHRS firmware z axis points down, in ROS z axis points up (see REP 103) 
         imuMsg.angular_velocity.z = -float(words[8])
 
-    q = quaternion_from_euler(roll,pitch,yaw+math.pi/2)
-    imuMsg.orientation.x = q[0]
-    imuMsg.orientation.y = q[1]
-    imuMsg.orientation.z = q[2]
-    imuMsg.orientation.w = q[3]
+    #q = quaternion_from_euler(roll,pitch,yaw)
+    q = Quaternion(axis=[0,0,1], radians=yaw)*Quaternion(axis=[0,1,0], radians=pitch)*Quaternion(axis=[1,0,0], radians=roll)
+    imuMsg.orientation.x = q[1]
+    imuMsg.orientation.y = q[2]
+    imuMsg.orientation.z = q[3]
+    imuMsg.orientation.w = q[0]
     imuMsg.header.stamp= rospy.Time.now()
     imuMsg.header.frame_id = 'imu_link'
     imuMsg.header.seq = seq
